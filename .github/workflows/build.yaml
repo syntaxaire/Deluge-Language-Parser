@@ -1,0 +1,34 @@
+name: Build
+
+on:
+  push
+
+jobs:
+  build-ubuntu:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Check out repository
+      uses: actions/checkout@v3
+    
+    - name: Set up Dart SDK
+      run: |
+        sudo apt-get install apt-transport-https
+        sudo sh -c 'curl https://dl-ssl.google.com/linux/linux_signing_key.pub | apt-key add -'
+        sudo sh -c 'curl https://storage.googleapis.com/download.dartlang.org/linux/debian/dart_stable.list > /etc/apt/sources.list.d/dart_stable.list'
+
+    - name: Install Dart SDK
+      run: |
+        sudo apt-get update
+        sudo apt-get install dart
+    
+    - name: pub get
+      run: /usr/lib/dart/bin/pub get
+    
+    - name: Run unit tests
+      run: /usr/lib/dart/bin/pub run test ./test/all_test.dart --platform vm
+    
+    - name: Build files
+      run: |
+        mkdir dist
+        /usr/lib/dart/bin/dart2aot ./bin/main.dart ./dist/main.dart.aot
