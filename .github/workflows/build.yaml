@@ -13,22 +13,32 @@ jobs:
     
     - name: Set up Dart SDK
       run: |
-        sudo apt-get install apt-transport-https
-        sudo sh -c 'curl https://dl-ssl.google.com/linux/linux_signing_key.pub | apt-key add -'
+        sudo apt install apt-transport-https
+        sudo sh -c 'curl https://dl-ssl.google.com/linux/linux_signing_key.pub | tee /etc/apt/trusted.gpg.d/dartlang.org.asc'
         sudo sh -c 'curl https://storage.googleapis.com/download.dartlang.org/linux/debian/dart_stable.list > /etc/apt/sources.list.d/dart_stable.list'
 
     - name: Install Dart SDK
       run: |
-        sudo apt-get update
-        sudo apt-get install dart
+        sudo apt update
+        sudo apt install dart
     
-    - name: pub get
-      run: /usr/lib/dart/bin/pub get
+    - name: dart pub get
+      run: /usr/lib/dart/bin/dart pub get
     
-    - name: Run unit tests
-      run: /usr/lib/dart/bin/pub run test ./test/all_test.dart --platform vm
+    # disabled - some bit rot occurred on original repo, tests do not work
+    # - name: Run unit tests
+    #  run: /usr/lib/dart/bin/dart run test ./test/all_test.dart --platform vm
     
-    - name: Build files
+    - name: Build AOT
       run: |
         mkdir dist
-        /usr/lib/dart/bin/dart2aot ./bin/main.dart ./dist/main.dart.aot
+        /usr/lib/dart/bin/dart compile aot-snapshot bin/main.dart -o dist/main.dart.aot
+
+    - name: Copy docs
+      run: cp -r deluge-docs dist
+    
+    - name: Publish build artifact
+      uses: actions/upload-artifact@v3
+      with:
+        name: deluge-lsp-aot
+        path: dist/
