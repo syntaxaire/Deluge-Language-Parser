@@ -66,6 +66,9 @@ Params: `{ "folder": string, "fileName": string }`
 
 ## Compiling for web
 
+    mkdir dist-web
+    dart compile js bin/web.dart -o dist-web/DelugeParser.js
+
 Dart apart from compiling to native code which was leveraged in the vscode extension, can also compile to javascript. The lang server can b compiled to javascript and interface with [monaco-editor](https://github.com/microsoft/monaco-editor "Monaco-editor"), the editor that powers vscode. 
 
 The entry point is in `\bin\web.dart`. Its interfaces with monaco-editor via service worker. 
@@ -76,14 +79,3 @@ The entry point is in `\bin\web.dart`. Its interfaces with monaco-editor via ser
 - Diagnostics
 
 The seperate web project is hosted in [here](https://github.com/GuruDhanush/Deluge-Editor "Deluge editor").
-
-
-### Compiling for web
-
-    dart2js .\bin\web.dart -m
-
-
----
-
-
-

@@ -29,14 +29,21 @@ jobs:
     # - name: Run unit tests
     #  run: /usr/lib/dart/bin/dart run test ./test/all_test.dart --platform vm
     
-    - name: Build AOT
+    - name: Prepare dist directory and copy docs
       run: |
         mkdir dist
-        /usr/lib/dart/bin/dart compile aot-snapshot bin/main.dart -o dist/main.dart.aot
+        cp -r deluge-docs dist
 
-    - name: Copy docs
-      run: cp -r deluge-docs dist
+    - name: Build AOT target
+      run: /usr/lib/dart/bin/dart compile aot-snapshot bin/main.dart -o dist/DelugeParser.aot
+
+    - name: Build executable target
+      run: /usr/lib/dart/bin/dart compile exe bin/main.dart -o dist/DelugeParser
     
+    # disabled - resulting artifact is only usable on build system due to deps
+    # - name: Build JavaScript target
+    #   run: /usr/lib/dart/bin/dart compile js bin/main.dart -o dist/DelugeParser.js
+
     - name: Publish build artifact
       uses: actions/upload-artifact@v3
       with:
